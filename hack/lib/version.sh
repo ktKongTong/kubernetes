@@ -32,11 +32,13 @@
 # If KUBE_GIT_VERSION_FILE, this function will load from that file instead of
 # querying git.
 kube::version::get_version_vars() {
+  echo KUBE_ROOT ${KUBE_ROOT}
   if [[ -n ${KUBE_GIT_VERSION_FILE-} ]]; then
+    echo running get_version_vars ${KUBE_GIT_VERSION_FILE}
     kube::version::load_version_vars "${KUBE_GIT_VERSION_FILE}"
     return
   fi
-
+  echo querying git
   # If the kubernetes source was exported through git archive, then
   # we likely don't have a git tree, but these magic values may be filled in.
   # shellcheck disable=SC2016,SC2050
@@ -52,9 +54,11 @@ kube::version::get_version_vars() {
      KUBE_GIT_VERSION="${BASH_REMATCH[1]}"
     fi
   fi
-
+  
   local git=(git --work-tree "${KUBE_ROOT}")
-
+  echo KUBE_GIT_COMMIT ${KUBE_GIT_COMMIT}
+  echo ${git[@]}
+  echo KUBE_GIT_TREE_STATE ${KUBE_GIT_TREE_STATE}
   if [[ -n ${KUBE_GIT_COMMIT-} ]] || KUBE_GIT_COMMIT=$("${git[@]}" rev-parse "HEAD^{commit}" 2>/dev/null); then
     if [[ -z ${KUBE_GIT_TREE_STATE-} ]]; then
       # Check if the tree is dirty.  default to dirty
