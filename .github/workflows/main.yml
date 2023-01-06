@@ -3,12 +3,12 @@ name: Docker
 on:
   push:
     branches:
-      - main
+      - master
       - release-1.26
   workflow_dispatch:
   pull_request:
     branches:
-      - main
+      - master
       
 
 # permissions:
