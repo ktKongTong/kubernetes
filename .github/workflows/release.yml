@@ -3,11 +3,12 @@ name: Docker
 on:
   push:
     branches:
+      - master
       - release-1.26
   workflow_dispatch:
   pull_request:
     branches:
-      - main
+      - master
       
 
 # permissions:
@@ -32,7 +33,9 @@ jobs:
         with:
           ref: 'release-1.26'
       - name: Check current dir
-        run: ls -l
+        run: |
+          ls -l
+          pwd
       - name: build image
         run: |
-          sudo /home/runner/work/kind/kind/kubernetes/hack/print-workspace-status.sh
+          sudo hack/print-workspace-status.sh
