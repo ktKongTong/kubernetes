@@ -36,6 +36,7 @@ jobs:
         run: |
           ls -l
           pwd
+          git
       - name: build image
         run: |
-          sudo kubernetes/hack/print-workspace-status.sh
+          sudo hack/print-workspace-status.sh
