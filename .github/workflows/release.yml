@@ -29,9 +29,13 @@ jobs:
 #       IP_FAMILY: ${{ matrix.ipFamily }}
     steps:
       - name: Clone kubernetes repo
-        uses: actions/checkout@v3
-        with:
-          ref: 'release-1.26'
+        run: |
+          git clone https://github.com/ktKongTong/kubernetes
+          cd kubernetes
+          git switch release-1.26
+        #uses: actions/checkout@v3
+        #with:
+        #  ref: 'release-1.26'
       - name: Check current dir
         run: |
           ls -l
