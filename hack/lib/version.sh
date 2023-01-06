@@ -47,11 +47,16 @@ kube::version::get_version_vars() {
   if [[ '$Format:%%$' == "%" ]]; then
     KUBE_GIT_COMMIT='$Format:%H$'
     KUBE_GIT_TREE_STATE="archive"
+    
+    ehco KUBE_GIT_COMMIT ${KUBE_GIT_COMMIT}
+    ehco KUBE_GIT_TREE_STATE ${KUBE_GIT_TREE_STATE}
     # When a 'git archive' is exported, the '$Format:%D$' below will look
     # something like 'HEAD -> release-1.8, tag: v1.8.3' where then 'tag: '
     # can be extracted from it.
     if [[ '$Format:%D$' =~ tag:\ (v[^ ,]+) ]]; then
      KUBE_GIT_VERSION="${BASH_REMATCH[1]}"
+      ehco BASH_REMATCH ${BASH_REMATCH}
+      ehco KUBE_GIT_VERSION ${KUBE_GIT_VERSION}
     fi
   fi
   
@@ -69,7 +74,7 @@ kube::version::get_version_vars() {
         KUBE_GIT_TREE_STATE="dirty"
       fi
     fi
-
+    ehco KUBE_GIT_VERSION value $("${git[@]}" describe --tags --match='v*' --abbrev=14 "${KUBE_GIT_COMMIT}^{commit}" 2>/dev/null)
     # Use git describe to find the version based on tags.
     if [[ -n ${KUBE_GIT_VERSION-} ]] || KUBE_GIT_VERSION=$("${git[@]}" describe --tags --match='v*' --abbrev=14 "${KUBE_GIT_COMMIT}^{commit}" 2>/dev/null); then
       # This translates the "git describe" to an actual semver.org
@@ -83,20 +88,24 @@ kube::version::get_version_vars() {
       # We don't want to do them in pure shell, so disable SC2001
       # shellcheck disable=SC2001
       DASHES_IN_VERSION=$(echo "${KUBE_GIT_VERSION}" | sed "s/[^-]//g")
+       ehco DASHES_IN_VERSION value ${DASHES_IN_VERSION}
       if [[ "${DASHES_IN_VERSION}" == "---" ]] ; then
         # shellcheck disable=SC2001
         # We have distance to subversion (v1.1.0-subversion-1-gCommitHash)
         KUBE_GIT_VERSION=$(echo "${KUBE_GIT_VERSION}" | sed "s/-\([0-9]\{1,\}\)-g\([0-9a-f]\{14\}\)$/.\1\+\2/")
+        ehco KUBE_GIT_VERSION value ${KUBE_GIT_VERSION}
       elif [[ "${DASHES_IN_VERSION}" == "--" ]] ; then
         # shellcheck disable=SC2001
         # We have distance to base tag (v1.1.0-1-gCommitHash)
         KUBE_GIT_VERSION=$(echo "${KUBE_GIT_VERSION}" | sed "s/-g\([0-9a-f]\{14\}\)$/+\1/")
+        ehco KUBE_GIT_VERSION value ${KUBE_GIT_VERSION}
       fi
       if [[ "${KUBE_GIT_TREE_STATE}" == "dirty" ]]; then
         # git describe --dirty only considers changes to existing files, but
         # that is problematic since new untracked .go files affect the build,
         # so use our idea of "dirty" from git status instead.
         KUBE_GIT_VERSION+="-dirty"
+        ehco KUBE_GIT_VERSION value ${KUBE_GIT_VERSION}
       fi
 
 
