@@ -42,4 +42,5 @@ jobs:
           pwd
       - name: build image
         run: |
+          cd kubernetes
           sudo hack/print-workspace-status.sh
