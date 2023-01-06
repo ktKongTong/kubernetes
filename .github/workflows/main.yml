@@ -1,0 +1,39 @@
+name: Docker
+
+on:
+  push:
+    branches:
+      - main
+      - release-1.26
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+      
+
+# permissions:
+#   contents: read
+
+jobs:
+  docker:
+    name: Docker build node image
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        docker_version: ["20.10"]
+        docker_channel: ["stable"]
+    env:
+      JOB_NAME: "docker-${{ matrix.docker_version }}-${{ matrix.docker_channel }}"
+#       IP_FAMILY: ${{ matrix.ipFamily }}
+    steps:
+      - name: Clone kubernetes repo
+        uses: actions/checkout@v3
+        with:
+          ref: 'release-1.26'
+      - name: Check current dir
+        run: ls -l
+      - name: build image
+        run: |
+          sudo /home/runner/work/kind/kind/kubernetes/hack/print-workspace-status.sh
