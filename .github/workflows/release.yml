@@ -65,11 +65,11 @@ jobs:
           env
           echo $GOROOT
           echo $GOPATH
-          go install
+          sh -c "go get"
       - name: Build test-driver
         run: |
           mkdir -p tmp
-          go build -o tmp/ test/e2e/dra/test-driver
+          go build -o tmp/test-driver test/e2e/dra/test-driver
       - name: Add Dockerfile
         run: |
           cat > tmp/Dockerfile <<EOF
