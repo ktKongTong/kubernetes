@@ -87,7 +87,11 @@ jobs:
           ENV TARGET=${TARGET:-controller}
           COPY test-driver /usr/local/bin/test-driver
           RUN chmod +x /usr/local/bin/test-driver
-          ENTRYPOINT ["test-driver", "--feature-gates", "ContextualLogging=true","-v=6",${TARGET}]
+          RUN cat > /usr/local/bin/run.sh <<EOF2
+            test-driver --feature-gates ContextualLogging=true -v=6 ${TARGET}
+          EOF2
+          RUN chmod +x /usr/local/bin/run.sh
+          ENTRYPOINT ["run.sh"]
           EOF
 #          ENTRYPOINT test-driver --feature-gates ContextualLogging=true -v=6 ${TARGET}
 # ENTRYPOINT ["test-driver", "--feature-gates", "ContextualLogging=true","-v=6","$TARGET"]
