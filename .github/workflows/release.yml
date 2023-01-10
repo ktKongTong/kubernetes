@@ -84,12 +84,12 @@ jobs:
           cat > tmp/Dockerfile <<EOF
           ARG TARGET
           FROM ubuntu:20.04
-          ARG CONT_IMG_VER
           ENV TARGET=${TARGET:-controller}
           COPY test-driver /usr/local/bin/test-driver
           RUN chmod +x /usr/local/bin/test-driver
-          ENTRYPOINT test-driver --feature-gates ContextualLogging=true -v=6 ${TARGET}
+          ENTRYPOINT ["test-driver", "--feature-gates", "ContextualLogging=true","-v=6 ${TARGET}"]
           EOF
+#          ENTRYPOINT test-driver --feature-gates ContextualLogging=true -v=6 ${TARGET}
 # ENTRYPOINT ["test-driver", "--feature-gates", "ContextualLogging=true","-v=6","$TARGET"]
       - name: set lower case owner name
         run: |
