@@ -86,8 +86,9 @@ jobs:
           FROM ubuntu:20.04
           COPY test-driver /usr/local/bin/test-driver
           RUN chmod +x /usr/local/bin/test-driver
-          ENTRYPOINT ["test-driver", "--feature-gates", "ContextualLogging=true","-v=6","${TARGET}"]
+          ENTRYPOINT test-driver --feature-gates ContextualLogging=true -v=6 $TARGET
           EOF
+# ENTRYPOINT ["test-driver", "--feature-gates", "ContextualLogging=true","-v=6","$TARGET"]
       - name: set lower case owner name
         run: |
           echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
@@ -100,7 +101,6 @@ jobs:
           file: tmp/Dockerfile
           push: true
           tags: ghcr.io/${{ env.OWNER_LC }}/${{ env.TEST_DRIVER_IMAGE }}-controller:${{ env.TEST_DRIVER_TAG }}
-#          target: controller
           build-args: |
             TARGET=controller
           platforms: linux/amd64
