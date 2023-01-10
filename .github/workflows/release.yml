@@ -72,6 +72,7 @@ jobs:
           cp test-driver ../../../../tmp
       - name: Add Dockerfile
         run: |
+          cd $GITHUB_WORKSPACE
           cat > tmp/Dockerfile <<EOF
           ARG TARGET=controller
           FROM ubuntu:20.04
