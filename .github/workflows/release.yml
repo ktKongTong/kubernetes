@@ -65,7 +65,7 @@ jobs:
           env
           echo $GOROOT
           echo $GOPATH
-          go get -v -u
+          go install
       - name: Build test-driver
         run: |
           mkdir -p tmp
