@@ -4,7 +4,7 @@ on:
   push:
     branches:
 #      - master
-      - release-1.26
+#      - release-1.26
   workflow_dispatch:
     inputs:
       image: # optional
@@ -91,7 +91,7 @@ jobs:
           context: tmp
           file: tmp/Dockerfile
           push: true
-          tags: ghcr.io/${OWNER_LC}/${{ github.event.inputs.image }}-controller:${{ github.event.inputs.tag }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.inputs.image }}-controller:${{ github.event.inputs.tag }}
           target: controller
           build-args: |
             TARGET=controller
@@ -102,7 +102,7 @@ jobs:
           context: tmp
           file: tmp/Dockerfile
           push: true
-          tags: ghcr.io/${OWNER_LC}/${{ github.event.inputs.image }}-plugin:${{ github.event.inputs.tag }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.inputs.image }}-plugin:${{ github.event.inputs.tag }}
           build-args: |
             TARGET=kubelet-plugin
           platforms: linux/amd64
