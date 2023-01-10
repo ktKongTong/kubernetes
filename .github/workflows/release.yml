@@ -56,6 +56,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Install go pkg
         run: |
+          pwd
+          ls -l
           go get
       - name: Build test-driver
         run: |
