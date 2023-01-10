@@ -1,17 +1,19 @@
-name: Docker
+name: build dra test-driver image
 
 on:
-  push:
-    branches:
+#  push:
+#    branches:
 #      - master
 #      - release-1.26
   workflow_dispatch:
     inputs:
       image: # optional
+        type: string
         description: 'Image name'
         required: false
         default: 'test-driver'
       tag:
+        type: string
         description: 'Tag to build'
         required: false
         default: 'latest'
