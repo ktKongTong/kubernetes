@@ -6,15 +6,15 @@ on:
 #      - master
       - release-1.26
   workflow_dispatch:
-  inputs:
-    image: # optional
-      description: 'Image name'
-      required: false
-      default: 'test-driver'
-    tag:
-      description: 'Tag to build'
-      required: false
-      default: 'latest'
+    inputs:
+      image: # optional
+        description: 'Image name'
+        required: false
+        default: 'test-driver'
+      tag:
+        description: 'Tag to build'
+        required: false
+        default: 'latest'
       
 
 # permissions:
