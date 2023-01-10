@@ -63,7 +63,7 @@ jobs:
           env
           echo $GOROOT
           echo $GOPATH
-          sh -c "go get"
+#          sh -c "go get"
       - name: Build test-driver
         run: |
           mkdir -p tmp
