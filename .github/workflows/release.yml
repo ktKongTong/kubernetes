@@ -3,12 +3,18 @@ name: Docker
 on:
   push:
     branches:
-      - master
+#      - master
       - release-1.26
   workflow_dispatch:
-  pull_request:
-    branches:
-      - master
+  inputs:
+    image: # optional
+      description: 'Image name'
+      required: false
+      default: 'test-driver'
+    tag:
+      description: 'Tag to build'
+      required: false
+      default: 'latest'
       
 
 # permissions:
@@ -16,7 +22,7 @@ on:
 
 jobs:
   docker:
-    name: Docker build node image
+    name: build dra test-driver image
     runs-on: ubuntu-20.04
     timeout-minutes: 30
     strategy:
@@ -28,19 +34,67 @@ jobs:
       JOB_NAME: "docker-${{ matrix.docker_version }}-${{ matrix.docker_channel }}"
 #       IP_FAMILY: ${{ matrix.ipFamily }}
     steps:
-      - name: Clone kubernetes repo
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          ref: 'release-1.26'
+      - name: setup Go env
+      - uses: actions/checkout@v3
+        with:
+          go-version: '>=1.19.3'
+      - run: go version
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses:
+          docker/setup-buildx-action@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install go pkg
         run: |
-          git clone https://github.com/ktKongTong/kubernetes
-          cd kubernetes
-          git switch release-1.26
-        #uses: actions/checkout@v3
-        #with:
-        #  ref: 'release-1.26'
-      - name: Check current dir
+#          cd $GITHUB_WORKSPACE/kubernetes
+          go get
+      - name: Build test-driver
         run: |
-          ls -l
-          pwd
-      - name: build image
+          mkdir -p tmp
+#          cd $GITHUB_WORKSPACE/kubernetes
+          go build -o tmp/ test/e2e/dra/test-driver
+      - name: Add Dockerfile
         run: |
-          cd kubernetes
-          sudo hack/print-workspace-status.sh
+          cat > tmp/Dockerfile <<EOF
+          ARG TARGET=controller
+          FROM ubuntu:20.04
+          COPY test-driver /usr/local/bin/test-driver
+          RUN chmod +x /usr/local/bin/test-driver
+          ENTRYPOINT ["test-driver", "--feature-gates", "ContextualLogging=true","-v=6","${TARGET}"]
+          EOF
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: tmp
+          file: tmp/Dockerfile
+          push: true
+          tags: ghcr.io/${OWNER_LC}/${{ github.event.inputs.image }}-controller:${{ github.event.inputs.tag }}
+          target: controller
+          build-args: |
+            TARGET=controller
+          platforms: linux/amd64
+      - name: Build and push plugin
+        uses: docker/build-push-action@v2
+        with:
+          context: tmp
+          file: tmp/Dockerfile
+          push: true
+          tags: ghcr.io/${OWNER_LC}/${{ github.event.inputs.image }}-plugin:${{ github.event.inputs.tag }}
+          build-args: |
+            TARGET=kubelet-plugin
+          platforms: linux/amd64
