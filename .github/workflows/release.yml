@@ -81,20 +81,22 @@ jobs:
       - name: Add Dockerfile
         run: |
           cd $GITHUB_WORKSPACE
-          cat > tmp/Dockerfile <<EOF
+          cat > tmp/ctDockerfile <<EOF
           ARG TARGET
           FROM ubuntu:20.04
           ENV TARGET=${TARGET:-controller}
           COPY test-driver /usr/local/bin/test-driver
           RUN chmod +x /usr/local/bin/test-driver
-          RUN cat > /usr/local/bin/run.sh <<EOF2
-            test-driver --feature-gates ContextualLogging=true -v=6 ${TARGET}
-          EOF2
-          RUN chmod +x /usr/local/bin/run.sh
-          ENTRYPOINT ["run.sh"]
+          ENTRYPOINT test-driver --feature-gates ContextualLogging=true -v=6 controller
           EOF
-#          ENTRYPOINT test-driver --feature-gates ContextualLogging=true -v=6 ${TARGET}
-# ENTRYPOINT ["test-driver", "--feature-gates", "ContextualLogging=true","-v=6","$TARGET"]
+          cat > tmp/pgDockerfile <<EOF
+          ARG TARGET
+          FROM ubuntu:20.04
+          ENV TARGET=${TARGET:-controller}
+          COPY test-driver /usr/local/bin/test-driver
+          RUN chmod +x /usr/local/bin/test-driver
+          ENTRYPOINT test-driver --feature-gates ContextualLogging=true -v=6 kubelet-plugin
+          EOF
       - name: set lower case owner name
         run: |
           echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
@@ -104,7 +106,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: tmp
-          file: tmp/Dockerfile
+          file: tmp/ctDockerfile
           push: true
           tags: ghcr.io/${{ env.OWNER_LC }}/${{ env.TEST_DRIVER_IMAGE }}-controller:${{ env.TEST_DRIVER_TAG }}
           build-args: |
@@ -114,7 +116,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: tmp
-          file: tmp/Dockerfile
+          file: tmp/pgDockerfile
           push: true
           tags: ghcr.io/${{ env.OWNER_LC }}/${{ env.TEST_DRIVER_IMAGE }}-plugin:${{ env.TEST_DRIVER_TAG }}
           build-args: |
