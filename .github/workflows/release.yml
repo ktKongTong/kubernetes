@@ -58,7 +58,9 @@ jobs:
         run: |
           pwd
           ls -l
-          go get
+          echo $GOROOT
+          echo $GOPATH
+          go get -v -u
       - name: Build test-driver
         run: |
           mkdir -p tmp
