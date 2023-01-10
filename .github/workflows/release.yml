@@ -100,7 +100,7 @@ jobs:
           file: tmp/Dockerfile
           push: true
           tags: ghcr.io/${{ env.OWNER_LC }}/${{ env.TEST_DRIVER_IMAGE }}-controller:${{ env.TEST_DRIVER_TAG }}
-          target: controller
+#          target: controller
           build-args: |
             TARGET=controller
           platforms: linux/amd64
