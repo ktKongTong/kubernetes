@@ -67,7 +67,9 @@ jobs:
       - name: Build test-driver
         run: |
           mkdir -p tmp
-          go build -o tmp/test-driver test/e2e/dra/test-driver
+          cd test/e2e/dra/test-driver
+          go build
+          cp test-driver ../../../../tmp
       - name: Add Dockerfile
         run: |
           cat > tmp/Dockerfile <<EOF
