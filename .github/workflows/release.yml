@@ -13,8 +13,8 @@ on:
         description: 'Tag to build'
         required: false
         default: 'latest'
-  push:
-    branches:
+#  push:
+#    branches:
 #      - master
 #      - release-1.26
   pull_request:

@@ -1,22 +1,19 @@
-name: build dra test-driver image with cdi
-
+name: build dra node image with cdi
 on:
   workflow_dispatch:
     inputs:
-      image: # optional
+      image:
         type: string
         description: 'Image name'
-        required: false
-        default: 'test-driver-cdi'
+        default: 'node-cdi'
       tag:
         type: string
         description: 'Tag to build'
-        required: false
         default: 'latest'
-  push:
-    branches:
-      #      - master
-#      - release-1.26
+#  push:
+#    branches:
+#      #      - master
+#      # - release-1.26
   pull_request:
     branches:
       - master
@@ -26,7 +23,7 @@ on:
 
 jobs:
   docker:
-    name: build dra test-driver image with cdi
+    name: build dra node image with cdi
     runs-on: ubuntu-20.04
     timeout-minutes: 30
     strategy:
@@ -36,11 +33,10 @@ jobs:
         docker_channel: ["stable"]
     env:
       JOB_NAME: "docker-${{ matrix.docker_version }}-${{ matrix.docker_channel }}"
-      TEST_DRIVER_IMAGE: node-cdi
-      TEST_DRIVER_TAG: latest
-    #      TEST_DRIVER_IMAGE: ${{ github.event.inputs.image }}
-    #      TEST_DRIVER_TAG: ${{ github.event.inputs.tag }}
-    #       IP_FAMILY: ${{ matrix.ipFamily }}
+      IMAGE_NAME: node-cdi
+      IMAGE_TAG: latest
+    #      IMAGE_NAME: ${{ github.event.inputs.image }}
+    #      IMAGE_NAME: ${{ github.event.inputs.tag }}
     steps:
 #      - name: checkout
 #        uses: actions/checkout@v3
@@ -51,22 +47,9 @@ jobs:
           cd /home/runner/work/kubernetes
           git clone https://github.com/kubernetes/kubernetes
           pwd
-          uname -a
           cd kubernetes
-          ls
+          pwd
           git switch release-1.26
-#      - name: Set up QEMU
-#        uses: docker/setup-qemu-action@v2
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v2
-#      - name: Setup Go Env
-#        uses: actions/setup-go@v3
-#        with:
-#          go-version: '>=1.19.3'
-#          cache: true
-#          cache-dependency-path: go.sum
-#      - name: Check Go Env
-#        run: go version
       - name: Install Kind
         run: |
           curl -Lo ./kind "https://kind.sigs.k8s.io/dl/v0.17.0/kind-$(uname)-amd64"
@@ -90,5 +73,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: push
         run: |
-          docker tag dra/node:latest ghcr.io/${{ env.OWNER_LC }}/${{ env.TEST_DRIVER_IMAGE }}-controller:${{ env.TEST_DRIVER_TAG }}
-          docker push ghcr.io/${{ env.OWNER_LC }}/${{ env.TEST_DRIVER_IMAGE }}-controller:${{ env.TEST_DRIVER_TAG }}
+          docker tag dra/node:latest ghcr.io/${{ env.OWNER_LC }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ghcr.io/${{ env.OWNER_LC }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
