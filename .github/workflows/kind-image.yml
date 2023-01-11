@@ -48,7 +48,7 @@ jobs:
 #          ref: 'release-1.26'
       - name: Clone kubernetes repo
         run: |
-          cd /home/runner/work
+          cd /home/runner/work/kubernetes
           git clone https://github.com/kubernetes/kubernetes
           pwd
           uname -a
@@ -74,7 +74,7 @@ jobs:
           sudo mv ./kind /usr/local/bin/kind
       - name: Build kind-dra-node-image
         run: |
-          cd kubernetes
+          cd /home/runner/work/kubernetes/kubernetes
           chmod +x test/e2e/dra/kind-build-image.sh
           test/e2e/dra/kind-build-image.sh dra/node:latest
       - name: set lower case owner name
