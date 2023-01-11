@@ -1,9 +1,8 @@
 name: build dra test-driver image
-
 on:
   workflow_dispatch:
     inputs:
-      image: # optional
+      image:
         type: string
         description: 'Image name'
         required: false
@@ -13,17 +12,6 @@ on:
         description: 'Tag to build'
         required: false
         default: 'latest'
-#  push:
-#    branches:
-#      - master
-#      - release-1.26
-  pull_request:
-    branches:
-      - master
-
-# permissions:
-#   contents: read
-
 jobs:
   docker:
     name: build dra test-driver image
@@ -36,11 +24,10 @@ jobs:
         docker_channel: ["stable"]
     env:
       JOB_NAME: "docker-${{ matrix.docker_version }}-${{ matrix.docker_channel }}"
-      TEST_DRIVER_IMAGE: test-driver
-      TEST_DRIVER_TAG: latest
-#      TEST_DRIVER_IMAGE: ${{ github.event.inputs.image }}
-#      TEST_DRIVER_TAG: ${{ github.event.inputs.tag }}
-#       IP_FAMILY: ${{ matrix.ipFamily }}
+      IMAGE_NAME: test-driver
+      IMAGE_TAG: latest
+#      IMAGE_NAME: ${{ github.event.inputs.image }}
+#      IMAGE_TAG: ${{ github.event.inputs.tag }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -108,7 +95,7 @@ jobs:
           context: tmp
           file: tmp/ctDockerfile
           push: true
-          tags: ghcr.io/${{ env.OWNER_LC }}/${{ env.TEST_DRIVER_IMAGE }}-controller:${{ env.TEST_DRIVER_TAG }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ env.IMAGE_NAME }}-controller:${{ env.IMAGE_TAG }}
           build-args: |
             TARGET=controller
           platforms: linux/amd64
@@ -118,7 +105,7 @@ jobs:
           context: tmp
           file: tmp/pgDockerfile
           push: true
-          tags: ghcr.io/${{ env.OWNER_LC }}/${{ env.TEST_DRIVER_IMAGE }}-plugin:${{ env.TEST_DRIVER_TAG }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ env.IMAGE_NAME }}-plugin:${{ env.IMAGE_TAG }}
           build-args: |
             TARGET=kubelet-plugin
           platforms: linux/amd64
