@@ -79,8 +79,6 @@ kube::version::get_version_vars() {
     echo -n ${KUBE_GIT_VERSION-}
     echo KUBE_GIT_VERSION value $("${git[@]}" describe --tags --match='v*' --abbrev=14 2>/dev/null)
     echo KUBE_GIT_VERSION value $("${git[@]}" describe --tags --match='v*')
-    git --work-tree hack/..  describe --tags
-    echo dddd
     # "${KUBE_GIT_COMMIT}^{commit}"
     # Use git describe to find the version based on tags.
     if [[ -n ${KUBE_GIT_VERSION-} ]] || KUBE_GIT_VERSION=$("${git[@]}" describe --tags --match='v*' --abbrev=14 2>/dev/null); then
