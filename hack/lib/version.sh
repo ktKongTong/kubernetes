@@ -81,7 +81,6 @@ kube::version::get_version_vars() {
     echo KUBE_GIT_VERSION value $("${git[@]}" describe --tags --match='v*')
     # git --work-tree hack/..  describe --tags
     git version
-    echo $(git tag -l)
     echo $(git --work-tree hack/..  describe --tags)
     echo dddd
     # "${KUBE_GIT_COMMIT}^{commit}"
