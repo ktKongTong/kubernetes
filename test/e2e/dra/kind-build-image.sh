@@ -23,8 +23,8 @@ set -ex
 set -o pipefail
 
 tag="$1"
+#containerd="containerd-1.7.0-beta.0-7-g8167751f5"
 containerd="containerd-1.6.0-830-g34d078e99" # from https://github.com/kind-ci/containerd-nightlies/releases
-
 tmpdir="$(mktemp -d)"
 cleanup() {
     rm -rf "$tmpdir"

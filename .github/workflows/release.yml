@@ -16,7 +16,7 @@ on:
   push:
     branches:
 #      - master
-      - release-1.26
+#      - release-1.26
   pull_request:
     branches:
       - master
