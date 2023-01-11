@@ -42,10 +42,19 @@ jobs:
     #      TEST_DRIVER_TAG: ${{ github.event.inputs.tag }}
     #       IP_FAMILY: ${{ matrix.ipFamily }}
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          ref: 'release-1.26'
+#      - name: checkout
+#        uses: actions/checkout@v3
+#        with:
+#          ref: 'release-1.26'
+      - name: Clone kubernetes repo
+        run: |
+          cd /home/runner/work
+          git clone https://github.com/kubernetes/kubernetes
+          pwd
+          uname -a
+          cd kubernetes
+          ls
+          git switch release-1.26
 #      - name: Set up QEMU
 #        uses: docker/setup-qemu-action@v2
 #      - name: Set up Docker Buildx
@@ -65,6 +74,7 @@ jobs:
           sudo mv ./kind /usr/local/bin/kind
       - name: Build kind-dra-node-image
         run: |
+          cd kubernetes
           chmod +x test/e2e/dra/kind-build-image.sh
           test/e2e/dra/kind-build-image.sh dra/node:latest
       - name: set lower case owner name
