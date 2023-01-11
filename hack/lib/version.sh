@@ -81,14 +81,12 @@ kube::version::get_version_vars() {
     echo KUBE_GIT_VERSION value $("${git[@]}" describe --tags --match='v*')
     # git --work-tree hack/..  describe --tags
     git version
-    echo $(git describe)
     echo $(git tag -l)
     echo $(git --work-tree hack/..  describe --tags)
     echo dddd
     # "${KUBE_GIT_COMMIT}^{commit}"
     # Use git describe to find the version based on tags.
-    M=v1.26.1-rc.0-21-gc090810c4c96e0
-    if [[ -n ${KUBE_GIT_VERSION-$M} ]] || KUBE_GIT_VERSION=$("${git[@]}" describe --tags --match='v*' --abbrev=14 2>/dev/null); then
+    if [[ -n ${KUBE_GIT_VERSION-} ]] || KUBE_GIT_VERSION=$("${git[@]}" describe --tags --match='v*' --abbrev=14 2>/dev/null); then
       # This translates the "git describe" to an actual semver.org
       # compatible semantic version that looks something like this:
       #   v1.1.0-alpha.0.6+84c76d1142ea4d
