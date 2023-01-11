@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-driver
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: test-driver
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: test-driver
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: test-driver
+subjects:
+  - kind: ServiceAccount
+    name: test-driver
+    namespace: kube-system
+---
+# daemonSet With test-driver-plugin
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: test-driver-plugin
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      k8s-app: test-driver-plugin
+  template:
+    metadata:
+      labels:
+        k8s-app: test-driver-plugin
+    spec:
+      hostNetwork: true
+      serviceAccountName: test-driver
+      containers:
+        - name: test-driver-plugin
+          image: test-driver-plugin:latest
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /var/lib/kubelet
+              name: kubelet-dir
+      volumes:
+        - name: kubelet-dir
+          hostPath:
+            path: /var/lib/kubelet
+            type: Directory
+---
+
+# Controller pod
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-driver-controller
+  namespace: kube-system
+spec:
+  containers:
+    - name: test-driver-controller
+      image: test-driver-controller:latest
+      imagePullPolicy: IfNotPresent
+  serviceAccountName: test-driver
